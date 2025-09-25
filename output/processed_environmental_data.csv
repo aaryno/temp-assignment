@@ -1,0 +1,80 @@
+station_id,date,temperature_c,humidity_percent,data_quality,station_name,latitude,longitude,elevation_m,station_type
+STN_001,2023-01-15,22.50,65.20,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_001,2023-01-16,23.10,68.40,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_001,2023-01-17,21.80,62.70,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_001,2023-01-18,24.20,70.10,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_001,2023-01-20,25.60,72.80,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_001,2023-01-21,19.40,55.20,good,Central Park Weather Station,40.78,-73.97,35,meteorological
+STN_002,2023-01-15,21.80,72.10,good,Times Square Monitor,40.76,-73.99,10,air_quality
+STN_002,2023-01-16,22.90,75.30,good,Times Square Monitor,40.76,-73.99,10,air_quality
+STN_002,2023-01-18,23.70,78.20,good,Times Square Monitor,40.76,-73.99,10,air_quality
+STN_002,2023-01-20,24.10,71.50,good,Times Square Monitor,40.76,-73.99,10,air_quality
+STN_002,2023-01-21,21.30,68.90,good,Times Square Monitor,40.76,-73.99,10,air_quality
+STN_003,2023-01-15,19.70,58.40,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_003,2023-01-16,20.80,61.20,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_003,2023-01-17,18.90,55.70,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_003,2023-01-18,22.10,64.30,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_003,2023-01-20,23.40,67.10,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_003,2023-01-21,16.80,49.50,good,Brooklyn Bridge Station,40.71,-74.00,25,meteorological
+STN_004,2023-01-15,26.30,78.90,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_004,2023-01-16,27.10,82.40,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_004,2023-01-17,25.80,76.20,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_004,2023-01-19,24.90,73.10,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_004,2023-01-20,29.20,88.30,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_004,2023-01-21,26.70,79.60,good,Queens Plaza Monitor,40.75,-73.94,15,air_quality
+STN_005,2023-01-15,18.20,48.30,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_005,2023-01-16,19.50,52.70,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_005,2023-01-17,17.80,45.90,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_005,2023-01-18,20.90,56.10,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_005,2023-01-20,21.70,58.50,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_005,2023-01-21,15.90,39.20,good,Staten Island Station,40.58,-74.15,45,meteorological
+STN_006,2023-01-15,24.80,69.70,good,Bronx Zoo Weather,40.85,-73.88,75,meteorological
+STN_006,2023-01-16,25.60,72.30,good,Bronx Zoo Weather,40.85,-73.88,75,meteorological
+STN_006,2023-01-17,23.90,66.80,good,Bronx Zoo Weather,40.85,-73.88,75,meteorological
+STN_006,2023-01-18,26.70,75.40,good,Bronx Zoo Weather,40.85,-73.88,75,meteorological
+STN_006,2023-01-20,27.30,78.10,good,Bronx Zoo Weather,40.85,-73.88,75,meteorological
+STN_007,2023-01-15,20.10,61.80,good,JFK Airport Monitor,40.64,-73.78,8,meteorological
+STN_007,2023-01-16,21.40,65.30,good,JFK Airport Monitor,40.64,-73.78,8,meteorological
+STN_007,2023-01-18,22.80,68.40,good,JFK Airport Monitor,40.64,-73.78,8,meteorological
+STN_007,2023-01-19,18.90,55.10,good,JFK Airport Monitor,40.64,-73.78,8,meteorological
+STN_007,2023-01-20,23.50,71.20,good,JFK Airport Monitor,40.64,-73.78,8,meteorological
+STN_008,2023-01-15,21.90,66.50,good,Liberty Island Station,40.69,-74.04,12,air_quality
+STN_008,2023-01-16,22.70,69.80,good,Liberty Island Station,40.69,-74.04,12,air_quality
+STN_008,2023-01-17,20.80,63.20,good,Liberty Island Station,40.69,-74.04,12,air_quality
+STN_008,2023-01-19,19.50,59.40,good,Liberty Island Station,40.69,-74.04,12,air_quality
+STN_008,2023-01-20,25.30,76.90,good,Liberty Island Station,40.69,-74.04,12,air_quality
+STN_009,2023-01-15,23.60,70.20,good,High Line Monitor,40.75,-74.00,18,air_quality
+STN_009,2023-01-16,24.90,74.60,good,High Line Monitor,40.75,-74.00,18,air_quality
+STN_009,2023-01-17,22.40,67.80,good,High Line Monitor,40.75,-74.00,18,air_quality
+STN_009,2023-01-18,26.20,78.30,good,High Line Monitor,40.75,-74.00,18,air_quality
+STN_009,2023-01-20,27.80,82.50,good,High Line Monitor,40.75,-74.00,18,air_quality
+STN_010,2023-01-15,19.80,57.90,good,Prospect Park Station,40.66,-73.97,52,meteorological
+STN_010,2023-01-16,20.60,61.40,good,Prospect Park Station,40.66,-73.97,52,meteorological
+STN_010,2023-01-17,18.70,54.30,good,Prospect Park Station,40.66,-73.97,52,meteorological
+STN_010,2023-01-18,22.30,65.80,good,Prospect Park Station,40.66,-73.97,52,meteorological
+STN_010,2023-01-20,23.10,68.70,good,Prospect Park Station,40.66,-73.97,52,meteorological
+STN_011,2023-01-15,25.40,75.80,good,Wall Street Monitor,40.71,-74.01,6,air_quality
+STN_011,2023-01-16,26.80,79.20,good,Wall Street Monitor,40.71,-74.01,6,air_quality
+STN_011,2023-01-17,24.10,72.30,good,Wall Street Monitor,40.71,-74.01,6,air_quality
+STN_011,2023-01-18,27.90,83.60,good,Wall Street Monitor,40.71,-74.01,6,air_quality
+STN_011,2023-01-20,28.70,86.90,good,Wall Street Monitor,40.71,-74.01,6,air_quality
+STN_012,2023-01-15,16.90,44.70,good,Columbia University,40.81,-73.96,85,meteorological
+STN_012,2023-01-16,18.20,48.30,good,Columbia University,40.81,-73.96,85,meteorological
+STN_012,2023-01-17,15.80,41.20,good,Columbia University,40.81,-73.96,85,meteorological
+STN_012,2023-01-18,19.70,52.60,good,Columbia University,40.81,-73.96,85,meteorological
+STN_012,2023-01-20,20.40,55.80,good,Columbia University,40.81,-73.96,85,meteorological
+STN_013,2023-01-15,22.70,67.40,good,Coney Island Station,40.58,-73.97,3,meteorological
+STN_013,2023-01-16,23.80,71.20,good,Coney Island Station,40.58,-73.97,3,meteorological
+STN_013,2023-01-17,21.50,64.80,good,Coney Island Station,40.58,-73.97,3,meteorological
+STN_013,2023-01-18,25.10,74.60,good,Coney Island Station,40.58,-73.97,3,meteorological
+STN_013,2023-01-20,26.40,78.10,good,Coney Island Station,40.58,-73.97,3,meteorological
+STN_014,2023-01-15,21.30,63.70,good,LaGuardia Monitor,40.78,-73.87,21,air_quality
+STN_014,2023-01-16,22.50,67.90,good,LaGuardia Monitor,40.78,-73.87,21,air_quality
+STN_014,2023-01-17,20.10,59.80,good,LaGuardia Monitor,40.78,-73.87,21,air_quality
+STN_014,2023-01-18,24.20,72.40,good,LaGuardia Monitor,40.78,-73.87,21,air_quality
+STN_014,2023-01-20,25.80,76.30,good,LaGuardia Monitor,40.78,-73.87,21,air_quality
+STN_015,2023-01-15,24.10,71.50,good,Battery Park Station,40.70,-74.02,4,air_quality
+STN_015,2023-01-16,25.30,75.80,good,Battery Park Station,40.70,-74.02,4,air_quality
+STN_015,2023-01-17,23.20,68.90,good,Battery Park Station,40.70,-74.02,4,air_quality
+STN_015,2023-01-18,26.80,80.20,good,Battery Park Station,40.70,-74.02,4,air_quality
+STN_015,2023-01-20,27.50,83.40,good,Battery Park Station,40.70,-74.02,4,air_quality
