@@ -40,7 +40,9 @@ try:
         calculate_station_statistics,
         join_station_data,
         save_processed_data,
-        setup_containerized_environment
+        validate_coordinate_data,
+        multi_condition_filtering,
+        analyze_temporal_patterns
     )
 except ImportError as e:
     pytest.fail(f"Cannot import functions from src.pandas_basics: {e}")
@@ -373,123 +375,207 @@ class TestIntegration:
         assert output_file.exists(), "Output file should exist"
 
 
-class TestSetupContainerizedEnvironment:
-    """Tests for containerized environment setup and validation."""
+class TestValidateCoordinateData:
+    """Tests for coordinate data validation and quality assessment."""
     
-    def test_setup_containerized_environment_basic_functionality(self):
-        """Test basic containerized environment setup functionality."""
-        # Create basic configuration
-        config = {
-            'environment_name': 'pandas-gis-analysis',
-            'python_version': '3.11',
-            'required_packages': ['pandas', 'numpy'],
-            'data_mount_point': './data',
-            'output_directory': './output'
+    def test_validate_coordinate_data_basic_functionality(self):
+        """Test basic coordinate validation functionality."""
+        # Create test data with good coordinates
+        data = {
+            'station_id': ['A1', 'B2', 'C3'],
+            'latitude': [40.7128, 34.0522, 41.8781],
+            'longitude': [-74.0060, -118.2437, -87.6298]
+        }
+        df = pd.DataFrame(data)
+        
+        result = validate_coordinate_data(df)
+        
+        # Should return DataFrame
+        assert isinstance(result, pd.DataFrame), "Should return DataFrame"
+        
+        # Should keep all good coordinates
+        assert len(result) == 3, "Should keep all valid coordinates"
+        
+    def test_validate_coordinate_data_invalid_coordinates(self):
+        """Test handling of invalid coordinate values."""
+        # Create test data with invalid coordinates
+        data = {
+            'station_id': ['A1', 'B2', 'C3', 'D4', 'E5'],
+            'latitude': [40.7128, 91.0, -95.0, 0.0, None],  # Invalid: >90, <-90, zero, null
+            'longitude': [-74.0060, -118.2437, 200.0, 0.0, -74.0060]  # Invalid: >180, zero, valid
+        }
+        df = pd.DataFrame(data)
+        
+        result = validate_coordinate_data(df)
+        
+        # Should filter out invalid coordinates
+        assert len(result) == 1, "Should only keep one valid coordinate"
+        assert result.iloc[0]['station_id'] == 'A1', "Should keep the valid coordinate"
+        
+    def test_validate_coordinate_data_missing_columns(self):
+        """Test handling when coordinate columns are missing."""
+        # Test data without latitude/longitude columns
+        data = {
+            'station_id': ['A1', 'B2'],
+            'temperature': [20.5, 18.3]
+        }
+        df = pd.DataFrame(data)
+        
+        result = validate_coordinate_data(df)
+        
+        # Should return original data when coordinate columns missing
+        assert len(result) == len(df), "Should return original data when columns missing"
+        
+    def test_validate_coordinate_data_empty_input(self):
+        """Test handling of empty or None input."""
+        # Test with None
+        result = validate_coordinate_data(None)
+        assert isinstance(result, pd.DataFrame), "Should return DataFrame even with None input"
+        assert len(result) == 0, "Should return empty DataFrame with None input"
+        
+        # Test with empty DataFrame
+        empty_df = pd.DataFrame()
+        result = validate_coordinate_data(empty_df)
+        assert isinstance(result, pd.DataFrame), "Should return DataFrame with empty input"
+        assert len(result) == 0, "Should return empty DataFrame with empty input"
+
+
+class TestMultiConditionFiltering:
+    """Tests for multi-condition filtering functionality."""
+    
+    def test_multi_condition_filtering_numeric_ranges(self):
+        """Test filtering with numeric range conditions."""
+        # Create test data
+        data = {
+            'temperature': [15, 20, 25, 30, 35],
+            'humidity': [40, 50, 60, 70, 80],
+            'station_id': ['A', 'B', 'C', 'D', 'E']
+        }
+        df = pd.DataFrame(data)
+        
+        # Filter config for temperature range
+        filters_config = {
+            'temperature': {'min': 20, 'max': 30},
+            'logic': 'AND'
         }
         
-        result = setup_containerized_environment(config)
+        result = multi_condition_filtering(df, filters_config)
         
-        # Verify return type and structure
-        assert isinstance(result, dict), "Should return dictionary"
+        # Should filter to temperature 20-30
+        assert len(result) == 3, "Should return 3 rows matching temperature range"
+        assert all(result['temperature'] >= 20), "All temperatures should be >= 20"
+        assert all(result['temperature'] <= 30), "All temperatures should be <= 30"
         
-        # Verify all required keys are present
-        required_keys = [
-            'environment_ready', 'python_version_match', 'packages_available',
-            'data_accessible', 'output_writable', 'container_benefits', 'setup_summary'
-        ]
-        for key in required_keys:
-            assert key in result, f"Result should contain '{key}' key"
+    def test_multi_condition_filtering_include_values(self):
+        """Test filtering with include conditions."""
+        data = {
+            'quality': ['good', 'fair', 'poor', 'good', 'fair'],
+            'station_id': ['A', 'B', 'C', 'D', 'E']
+        }
+        df = pd.DataFrame(data)
         
-        # Verify data types
-        assert isinstance(result['environment_ready'], bool), "environment_ready should be boolean"
-        assert isinstance(result['python_version_match'], bool), "python_version_match should be boolean"
-        assert isinstance(result['packages_available'], list), "packages_available should be list"
-        assert isinstance(result['data_accessible'], bool), "data_accessible should be boolean"
-        assert isinstance(result['output_writable'], bool), "output_writable should be boolean"
-        assert isinstance(result['container_benefits'], list), "container_benefits should be list"
-        assert isinstance(result['setup_summary'], str), "setup_summary should be string"
-        
-    def test_setup_containerized_environment_package_detection(self):
-        """Test that function can detect available packages."""
-        config = {
-            'environment_name': 'test-environment',
-            'python_version': '3.11',
-            'required_packages': ['pandas', 'numpy', 'nonexistent_package_12345'],
-            'data_mount_point': './data',
-            'output_directory': './output'
+        filters_config = {
+            'quality': {'include': ['good', 'fair']},
+            'logic': 'AND'
         }
         
-        result = setup_containerized_environment(config)
+        result = multi_condition_filtering(df, filters_config)
         
-        # Should detect pandas and numpy (assuming they're installed)
-        assert 'pandas' in result['packages_available'] or 'numpy' in result['packages_available'], \
-            "Should detect at least one common package"
+        # Should keep only 'good' and 'fair' quality
+        assert len(result) == 4, "Should return 4 rows with good/fair quality"
+        assert all(result['quality'].isin(['good', 'fair'])), "Should only have good/fair quality"
         
-        # Should not include nonexistent package
-        assert 'nonexistent_package_12345' not in result['packages_available'], \
-            "Should not include nonexistent packages"
-            
-    def test_setup_containerized_environment_container_benefits(self):
-        """Test that function documents containerization benefits."""
-        config = {
-            'environment_name': 'benefits-test',
-            'python_version': '3.11',
-            'required_packages': ['pandas'],
-            'data_mount_point': './data',
-            'output_directory': './output'
-        }
+    def test_multi_condition_filtering_empty_config(self):
+        """Test behavior with empty filter configuration."""
+        data = {'temperature': [20, 25, 30], 'station_id': ['A', 'B', 'C']}
+        df = pd.DataFrame(data)
         
-        result = setup_containerized_environment(config)
+        result = multi_condition_filtering(df, {})
         
-        # Should have multiple container benefits listed
-        assert len(result['container_benefits']) > 0, "Should list container benefits"
+        # Should return original data with empty config
+        assert len(result) == len(df), "Should return all data with empty config"
         
-        # Check for expected benefit categories (at least one should be present)
-        benefit_text = ' '.join(result['container_benefits']).lower()
-        expected_concepts = ['consistent', 'reproducible', 'isolated', 'collaboration']
-        
-        found_concepts = [concept for concept in expected_concepts if concept in benefit_text]
-        assert len(found_concepts) > 0, f"Should mention containerization benefits like {expected_concepts}"
-        
-    def test_setup_containerized_environment_invalid_input(self):
-        """Test function handles invalid input gracefully."""
+    def test_multi_condition_filtering_invalid_input(self):
+        """Test handling of invalid input."""
         # Test with None input
-        result = setup_containerized_environment(None)
-        assert isinstance(result, dict), "Should return dict even with None input"
-        assert result['environment_ready'] is False, "Should not be ready with None input"
-        
-        # Test with incomplete config
-        incomplete_config = {'environment_name': 'incomplete'}
-        result = setup_containerized_environment(incomplete_config)
-        assert isinstance(result, dict), "Should return dict even with incomplete config"
-        assert result['environment_ready'] is False, "Should not be ready with incomplete config"
-        
-    def test_setup_containerized_environment_summary_informative(self):
-        """Test that setup summary provides useful information."""
-        config = {
-            'environment_name': 'summary-test-env',
-            'python_version': '3.11',
-            'required_packages': ['pandas', 'numpy'],
-            'data_mount_point': './data',
-            'output_directory': './output'
+        result = multi_condition_filtering(None, {})
+        assert isinstance(result, pd.DataFrame), "Should return DataFrame with None input"
+        assert len(result) == 0, "Should return empty DataFrame with None input"
+
+
+class TestAnalyzeTemporalPatterns:
+    """Tests for temporal pattern analysis functionality."""
+    
+    def test_analyze_temporal_patterns_basic_functionality(self):
+        """Test basic temporal analysis functionality."""
+        # Create test data with dates
+        dates = pd.date_range('2023-01-01', '2023-12-31', freq='D')
+        data = {
+            'date': dates,
+            'temperature': np.random.normal(20, 5, len(dates)),
+            'station_id': ['A'] * len(dates)
         }
+        df = pd.DataFrame(data)
         
-        result = setup_containerized_environment(config)
+        result = analyze_temporal_patterns(df)
         
-        # Summary should contain environment name
-        assert 'summary-test-env' in result['setup_summary'], \
-            "Summary should mention environment name"
+        # Should return dictionary with expected keys
+        assert isinstance(result, dict), "Should return dictionary"
+        assert 'overall_stats' in result, "Should contain overall statistics"
+        assert 'monthly_patterns' in result, "Should contain monthly patterns"
+        assert 'seasonal_summary' in result, "Should contain seasonal summary"
         
-        # Summary should be substantial (more than just a few words)
-        assert len(result['setup_summary']) > 20, \
-            "Summary should be informative with meaningful content"
+        # Overall stats should have expected keys
+        stats = result['overall_stats']
+        expected_stats = ['mean', 'min', 'max', 'std', 'count']
+        for stat in expected_stats:
+            assert stat in stats, f"Overall stats should contain {stat}"
+            
+    def test_analyze_temporal_patterns_monthly_analysis(self):
+        """Test monthly pattern detection."""
+        # Create data with clear seasonal pattern
+        dates = pd.date_range('2023-01-01', '2023-12-31', freq='D')
+        # Create seasonal temperature pattern (warmer in summer months)
+        temperatures = [20 + 10 * np.sin(2 * np.pi * (i / 365.25)) for i in range(len(dates))]
         
-        # Summary should contain key status information
-        summary_lower = result['setup_summary'].lower()
-        status_indicators = ['ready', 'status', 'environment', 'validation']
-        found_indicators = [word for word in status_indicators if word in summary_lower]
-        assert len(found_indicators) > 0, \
-            "Summary should contain environment status information"
+        data = {
+            'date': dates,
+            'temperature': temperatures,
+            'station_id': ['A'] * len(dates)
+        }
+        df = pd.DataFrame(data)
+        
+        result = analyze_temporal_patterns(df)
+        
+        # Should identify seasonal patterns
+        seasonal = result['seasonal_summary']
+        assert 'warmest_month' in seasonal, "Should identify warmest month"
+        assert 'coolest_month' in seasonal, "Should identify coolest month"
+        assert 'seasonal_range' in seasonal, "Should calculate seasonal range"
+        
+        # Seasonal range should be positive
+        assert seasonal['seasonal_range'] > 0, "Seasonal range should be positive"
+        
+    def test_analyze_temporal_patterns_invalid_columns(self):
+        """Test handling when required columns are missing."""
+        data = {'station_id': ['A', 'B'], 'value': [1, 2]}
+        df = pd.DataFrame(data)
+        
+        # Test with missing date column
+        result = analyze_temporal_patterns(df, date_column='nonexistent')
+        assert result == {}, "Should return empty dict when date column missing"
+        
+        # Test with missing value column  
+        result = analyze_temporal_patterns(df, value_column='nonexistent')
+        assert result == {}, "Should return empty dict when value column missing"
+        
+    def test_analyze_temporal_patterns_empty_input(self):
+        """Test handling of empty input."""
+        result = analyze_temporal_patterns(None)
+        assert result == {}, "Should return empty dict with None input"
+        
+        result = analyze_temporal_patterns(pd.DataFrame())
+        assert result == {}, "Should return empty dict with empty DataFrame"
 
 
 # ==============================================================================

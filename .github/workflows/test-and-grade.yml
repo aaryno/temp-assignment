@@ -1,0 +1,212 @@
+name: 🐼 Pandas Basics Assignment Grading
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test-pandas-assignment:
+    runs-on: ubuntu-latest
+
+    env:
+      PYTHON_VERSION: "3.11"
+
+    steps:
+      - name: 📥 Checkout Assignment Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: 📦 Install UV Package Manager
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: 🔧 Install Dependencies with UV
+        run: |
+          echo "🔍 Installing project dependencies..."
+          uv pip install --system -r requirements.txt
+
+          # Install additional testing dependencies
+          uv pip install --system pytest pytest-html pytest-json-report pytest-cov
+
+          echo "✅ Dependencies installed successfully!"
+
+      - name: 📊 Verify Data Setup
+        run: |
+          echo "🔍 Verifying assignment data files..."
+
+          if [ -d "data" ]; then
+            echo "✅ Data directory found"
+            ls -la data/
+
+            # Run data creation script if it exists
+            if [ -f "data/create_sample_data.py" ]; then
+              echo "🔄 Running data creation script..."
+              python data/create_sample_data.py
+              echo "✅ Sample data created"
+            fi
+          else
+            echo "⚠️ No data directory found - assignments may use built-in datasets"
+          fi
+
+      - name: 🔍 Verify Assignment Structure
+        run: |
+          echo "📋 Verifying assignment file structure..."
+
+          # Check for required files
+          echo "📁 Required directories:"
+          ls -la | grep -E "(src|tests|notebooks)" || echo "⚠️ Some directories may be missing"
+
+          echo "📄 Python source files:"
+          find src -name "*.py" 2>/dev/null | head -10 || echo "⚠️ No source files found in src/"
+
+          echo "🧪 Test files:"
+          find tests -name "*.py" 2>/dev/null | head -10 || echo "⚠️ No test files found in tests/"
+
+          echo "📊 Jupyter notebooks:"
+          find notebooks -name "*.ipynb" 2>/dev/null | head -5 || echo "ℹ️ No notebooks found"
+
+      - name: 🧪 Run Pandas Assignment Test Suite
+        run: |
+          echo "🚀 Running automated test suite for Pandas functions..."
+
+          # Run tests with comprehensive output
+          python -m pytest tests/test_pandas_basics.py \
+            -v \
+            --tb=short \
+            --html=test-results.html \
+            --self-contained-html \
+            --json-report \
+            --json-report-file=test-results.json \
+            --cov=src \
+            --cov-report=html \
+            --cov-report=term-missing
+        continue-on-error: true
+
+      - name: 📊 Calculate Assignment Grade
+        run: |
+          echo "📋 Calculating assignment grade..."
+          python scripts/calculate_grade.py --verbose --output grade-report.json
+
+      - name: 📈 Display Grade Summary
+        run: |
+          echo "📊 PANDAS ASSIGNMENT GRADE SUMMARY"
+          echo "================================"
+          if [ -f grade-report.json ]; then
+            echo "Score: $ASSIGNMENT_SCORE/$POSSIBLE_POINTS points ($GRADE_PERCENTAGE%)"
+            echo "Grade: $LETTER_GRADE"
+            echo "Tests Passed: $TESTS_PASSED/$TESTS_TOTAL"
+            echo "Functions Implemented: $FUNCTIONS_IMPLEMENTED/$TESTS_TOTAL"
+            echo "Implementation Rate: $IMPLEMENTATION_RATE%"
+            echo ""
+            echo "📝 Skills Assessment:"
+            echo "   • Data Loading: $DATA_LOADING_SKILL"
+            echo "   • Data Filtering: $DATA_FILTERING_SKILL"
+            echo "   • Statistical Analysis: $STATISTICAL_ANALYSIS_SKILL"
+            echo "   • Data Integration: $DATA_INTEGRATION_SKILL"
+            echo ""
+            echo "📝 Grade report saved to grade-report.json"
+            echo "📊 Test report saved to test-results.html"
+          else
+            echo "❌ Grade report not generated"
+          fi
+
+      - name: 📎 Upload Grade Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pandas-basics-grade-report
+          path: |
+            grade-report.json
+            test-results.html
+            test-results.json
+            htmlcov/
+          retention-days: 30
+
+      - name: 📊 Upload Assignment Code
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pandas-basics-submission
+          path: |
+            src/*.py
+            notebooks/*.ipynb
+            tests/*.py
+          retention-days: 30
+
+      - name: 🎯 Set Job Status Based on Grade
+        run: |
+          if [ "$GRADE_PERCENTAGE" ]; then
+            grade_num=$(echo $GRADE_PERCENTAGE | cut -d'.' -f1)
+            if [ "$grade_num" -ge 70 ]; then
+              echo "✅ Assignment passed with $GRADE_PERCENTAGE% (Grade: $LETTER_GRADE)"
+              exit 0
+            else
+              echo "❌ Assignment did not meet minimum requirements: $GRADE_PERCENTAGE% (Grade: $LETTER_GRADE)"
+              echo "💡 Minimum passing grade is 70%"
+              echo "📚 Review implementation requirements and test your functions locally"
+              exit 1
+            fi
+          else
+            echo "⚠️ Could not determine grade - check assignment files"
+            exit 1
+          fi
+
+      - name: 🔍 Debug Information (On Failure)
+        if: failure()
+        run: |
+          echo "🐛 DEBUG INFORMATION"
+          echo "==================="
+          echo "📁 Assignment files:"
+          ls -la src/*.py 2>/dev/null || echo "No Python files found in src/ directory"
+          echo ""
+          echo "🧪 Test files:"
+          ls -la tests/*.py 2>/dev/null || echo "No test files found in tests/ directory"
+          echo ""
+          echo "📊 Jupyter notebooks:"
+          ls -la notebooks/*.ipynb 2>/dev/null || echo "No notebooks found in notebooks/ directory"
+          echo ""
+          echo "🌐 Environment variables:"
+          env | grep -E "(ASSIGNMENT|GRADE|TEST|FUNCTION)" | sort
+          echo ""
+          echo "🐍 Python packages:"
+          python -m pip list | grep -E "(pandas|numpy|matplotlib)"
+
+      - name: 🎓 Professional Context Summary
+        if: always()
+        run: |
+          echo ""
+          echo "🎓 PROFESSIONAL DEVELOPMENT CONTEXT"
+          echo "==================================="
+          echo "✅ Skills Assessed:"
+          echo "   • Pandas DataFrame operations and data manipulation"
+          echo "   • Data loading, exploration, and quality assessment"
+          echo "   • Data filtering and querying with boolean indexing"
+          echo "   • Statistical analysis and aggregation operations"
+          echo "   • Multi-dataset integration with joins and merges"
+          echo ""
+          echo "🏢 Industry Relevance:"
+          echo "   • Foundation for data analyst and business intelligence roles"
+          echo "   • Essential for environmental data analysis and reporting"
+          echo "   • Critical for GIS data preprocessing and quality control"
+          echo "   • Direct preparation for geospatial data science positions"
+          echo ""
+          echo "🚀 Career Applications:"
+          echo "   • Environmental monitoring data analysis"
+          echo "   • Urban planning demographic studies"
+          echo "   • Real estate market analysis and reporting"
+          echo "   • Transportation planning and logistics optimization"
+          echo ""
+          echo "📈 Next Steps:"
+          echo "   • Ready for GeoPandas vector spatial analysis"
+          echo "   • Prepared for advanced spatial data manipulation"
+          echo "   • Foundation for web-based geospatial applications"
+          echo ""
+          echo "💡 Professional Tip: These Pandas skills are used in 90% of GIS data workflows!"

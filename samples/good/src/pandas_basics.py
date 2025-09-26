@@ -349,87 +349,279 @@ def save_processed_data(df, output_file):
     return stats_df
 
 
-def setup_containerized_environment(container_config):
+def validate_coordinate_data(df):
     """
-    CONTAINERIZED ENVIRONMENT SETUP (Setting up consistent development environment)
+    VALIDATE COORDINATE DATA (Comprehensive coordinate validation and quality assessment)
     
-    This function demonstrates containerized development environment management for
-    reliable, reproducible data analysis workflows. Students learn practical benefits
-    of containerization without complex configuration.
+    This function performs comprehensive validation of coordinate data including bounds
+    checking, format validation, and quality assessment. Essential for ensuring spatial
+    data integrity in GIS workflows.
     
-    In professional GIS development, containerization ensures that analysis runs
-    consistently across different computers, operating systems, and team members.
-    This is especially important for environmental data analysis where reproducibility
-    is crucial for scientific validity.
-    
-    📚 Learning Resource: See GitHub Codespaces environment you're working in!
-    🧪 Test Command: `uv run pytest tests/test_pandas_basics.py::test_setup_containerized_environment -v`
+    📚 Learning Resource: See `notebooks/06_function_validate_coordinate_data.ipynb`
+    🧪 Test Command: `uv run pytest tests/test_pandas_basics.py::test_validate_coordinate_data -v`
     
     Args:
-        container_config (dict): Configuration dictionary with container environment settings
-        
-    Expected keys in container_config:
-        - 'environment_name': Name for the analysis environment (str)
-        - 'python_version': Python version to validate (str, e.g., "3.11")  
-        - 'required_packages': List of required package names (list)
-        - 'data_mount_point': Expected data directory path (str)
-        - 'output_directory': Directory for analysis outputs (str)
+        df (pandas.DataFrame): DataFrame with coordinate columns
         
     Returns:
-        dict: Environment validation results with keys:
-            - 'environment_ready': Boolean indicating if environment is properly configured
-            - 'python_version_match': Boolean indicating if Python version meets requirements
-            - 'packages_available': List of successfully imported packages
-            - 'data_accessible': Boolean indicating if data directory is accessible
-            - 'output_writable': Boolean indicating if output directory is writable
-            - 'container_benefits': List of containerization benefits demonstrated
-            - 'setup_summary': String summary of environment validation
-            
-    Example:
-        >>> config = {
-        ...     'environment_name': 'pandas-gis-analysis',
-        ...     'python_version': '3.11',
-        ...     'required_packages': ['pandas', 'numpy', 'matplotlib'],
-        ...     'data_mount_point': './data',
-        ...     'output_directory': './output'
-        ... }
-        >>> result = setup_containerized_environment(config)
-        >>> print(result['environment_ready'])
-        True
-        >>> print(result['container_benefits'])
-        ['Consistent environment across systems', 'Reproducible analysis results', ...]
-    
-    Professional Context:
-        This function simulates the environment validation that occurs in containerized
-        GIS workflows used by organizations like USGS, NOAA, and environmental consulting
-        firms. Understanding container benefits prepares students for professional 
-        development workflows.
+        pandas.DataFrame: Validated data with invalid coordinates removed
     """
     
     print('=' * 50)
-    print('CALCULATING STATION STATISTICS')
+    print('VALIDATING COORDINATE DATA')
     print('=' * 50)
     
     if df is None or df.empty:
-        print('❌ ERROR: Invalid DataFrame')
+        print('❌ ERROR: Invalid or empty DataFrame')
         return pd.DataFrame()
     
-    required_cols = ['station_id', 'temperature_c', 'humidity_percent']
-    if not all(col in df.columns for col in required_cols):
-        print('❌ ERROR: Missing required columns')
+    # Check for required coordinate columns
+    if 'latitude' not in df.columns or 'longitude' not in df.columns:
+        print('❌ ERROR: Missing latitude or longitude columns')
+        return df
+        
+    initial_count = len(df)
+    print(f"📊 Starting validation of {initial_count} coordinate records")
+    
+    # Create copy for validation
+    validated_df = df.copy()
+    
+    # Check for valid latitude range (-90 to 90)
+    lat_valid = (validated_df['latitude'] >= -90) & (validated_df['latitude'] <= 90)
+    lat_invalid_count = (~lat_valid).sum()
+    
+    # Check for valid longitude range (-180 to 180)  
+    lon_valid = (validated_df['longitude'] >= -180) & (validated_df['longitude'] <= 180)
+    lon_invalid_count = (~lon_valid).sum()
+    
+    # Check for null coordinates
+    null_coords = validated_df['latitude'].isnull() | validated_df['longitude'].isnull()
+    null_count = null_coords.sum()
+    
+    # Check for zero coordinates (often invalid)
+    zero_coords = (validated_df['latitude'] == 0) & (validated_df['longitude'] == 0)
+    zero_count = zero_coords.sum()
+    
+    print(f"🔍 Validation results:")
+    print(f"   Invalid latitude values: {lat_invalid_count}")
+    print(f"   Invalid longitude values: {lon_invalid_count}")
+    print(f"   Null coordinate values: {null_count}")
+    print(f"   Zero coordinates (suspicious): {zero_count}")
+    
+    # Remove invalid coordinates
+    valid_coords = lat_valid & lon_valid & ~null_coords & ~zero_coords
+    validated_df = validated_df[valid_coords]
+    
+    final_count = len(validated_df)
+    removed_count = initial_count - final_count
+    
+    print(f"\n📈 Validation summary:")
+    print(f"   Original records: {initial_count}")
+    print(f"   Valid records: {final_count}")
+    print(f"   Removed records: {removed_count}")
+    print(f"   Data quality: {(final_count/initial_count)*100:.1f}%")
+    
+    print('✅ Coordinate validation completed!')
+    return validated_df
+
+
+def multi_condition_filtering(df, filters_config):
+    """
+    MULTI-CONDITION FILTERING (Complex filtering with multiple criteria and logical operations)
+    
+    This function applies multiple filtering conditions dynamically based on configuration,
+    supporting complex boolean logic for advanced data selection scenarios.
+    
+    📚 Learning Resource: See `notebooks/07_function_multi_condition_filtering.ipynb`
+    🧪 Test Command: `uv run pytest tests/test_pandas_basics.py::test_multi_condition_filtering -v`
+    
+    Args:
+        df (pandas.DataFrame): Environmental data to filter
+        filters_config (dict): Dictionary defining filtering rules
+        
+    Returns:
+        pandas.DataFrame: Filtered data meeting all conditions
+    """
+    
+    print('=' * 50)
+    print('APPLYING MULTI-CONDITION FILTERING')
+    print('=' * 50)
+    
+    if df is None or df.empty:
+        print('❌ ERROR: Invalid or empty DataFrame')
         return pd.DataFrame()
+        
+    if not filters_config:
+        print('⚠️  No filters specified, returning original data')
+        return df
     
-    grouped = df.groupby('station_id')
-    stats_df = pd.DataFrame({
-        'station_id': grouped['temperature_c'].mean().index,
-        'avg_temperature': grouped['temperature_c'].mean().values,
-        'avg_humidity': grouped['humidity_percent'].mean().round(1).values,
-        'reading_count': grouped.size().values
-    })
+    # Start with all data
+    filtered_df = df.copy()
+    initial_count = len(filtered_df)
     
-    print(f'📊 Statistics calculated for {len(stats_df)} stations')
-    print('✅ Statistics calculation completed!')
-    return stats_df
+    print(f"📊 Starting with {initial_count} rows")
+    
+    # Apply each filter condition
+    conditions_applied = []
+    
+    for column, config in filters_config.items():
+        if column == 'logic':
+            continue  # Skip logic configuration
+            
+        if column not in df.columns:
+            print(f"⚠️  Warning: Column '{column}' not found in data")
+            continue
+            
+        # Handle different filter types
+        if 'min' in config or 'max' in config:
+            # Numeric range filtering
+            condition = pd.Series([True] * len(filtered_df), index=filtered_df.index)
+            
+            if 'min' in config:
+                condition &= (filtered_df[column] >= config['min'])
+                
+            if 'max' in config:
+                condition &= (filtered_df[column] <= config['max'])
+                
+            conditions_applied.append(condition)
+            print(f"🔢 Applied numeric filter to {column}: {config}")
+            
+        elif 'include' in config:
+            # Include specific values
+            condition = filtered_df[column].isin(config['include'])
+            conditions_applied.append(condition)
+            print(f"✅ Applied include filter to {column}: {config['include']}")
+            
+        elif 'exclude' in config:
+            # Exclude specific values  
+            condition = ~filtered_df[column].isin(config['exclude'])
+            conditions_applied.append(condition)
+            print(f"❌ Applied exclude filter to {column}: {config['exclude']}")
+    
+    # Combine all conditions
+    if conditions_applied:
+        logic = filters_config.get('logic', 'AND').upper()
+        
+        if logic == 'AND':
+            # All conditions must be true
+            final_condition = conditions_applied[0]
+            for condition in conditions_applied[1:]:
+                final_condition &= condition
+        else:  # OR logic
+            # Any condition can be true
+            final_condition = conditions_applied[0]
+            for condition in conditions_applied[1:]:
+                final_condition |= condition
+        
+        # Apply the combined filter
+        filtered_df = filtered_df[final_condition]
+        
+        print(f"🔗 Combined conditions using {logic} logic")
+    
+    final_count = len(filtered_df)
+    percentage = (final_count / initial_count) * 100 if initial_count > 0 else 0
+    
+    print(f"📈 Result: {final_count} rows ({percentage:.1f}% of original data)")
+    print(f"🚫 Filtered out: {initial_count - final_count} rows")
+    print('✅ Multi-condition filtering completed!')
+    
+    return filtered_df
+
+
+def analyze_temporal_patterns(df, date_column='date', value_column='temperature', groupby_column='station_id'):
+    """
+    ANALYZE TEMPORAL PATTERNS (Time series analysis with pandas datetime functionality)
+    
+    This function analyzes temporal patterns in environmental data including seasonal trends,
+    yearly patterns, and statistical summaries over time periods.
+    
+    📚 Learning Resource: See `notebooks/08_function_analyze_temporal_patterns.ipynb`
+    🧪 Test Command: `uv run pytest tests/test_pandas_basics.py::test_analyze_temporal_patterns -v`
+    
+    Args:
+        df (pandas.DataFrame): Environmental data with datetime information
+        date_column (str): Name of date/datetime column
+        value_column (str): Name of value column to analyze over time
+        groupby_column (str): Column to group by for pattern analysis
+        
+    Returns:
+        dict: Temporal analysis results with trends, patterns, and statistics
+    """
+    
+    print('=' * 50)
+    print('ANALYZING TEMPORAL PATTERNS')
+    print('=' * 50)
+    
+    # Validate inputs
+    if df is None or df.empty:
+        print('❌ ERROR: Invalid or empty DataFrame')
+        return {}
+        
+    if date_column not in df.columns:
+        print(f"❌ ERROR: Date column '{date_column}' not found")
+        return {}
+        
+    if value_column not in df.columns:
+        print(f"❌ ERROR: Value column '{value_column}' not found")
+        return {}
+    
+    # Make a copy and ensure date column is datetime
+    analysis_df = df.copy()
+    analysis_df[date_column] = pd.to_datetime(analysis_df[date_column])
+    
+    print(f"📅 Date range: {analysis_df[date_column].min()} to {analysis_df[date_column].max()}")
+    print(f"📊 Analyzing {len(analysis_df)} records")
+    
+    # Extract temporal components
+    analysis_df['year'] = analysis_df[date_column].dt.year
+    analysis_df['month'] = analysis_df[date_column].dt.month
+    analysis_df['day_of_week'] = analysis_df[date_column].dt.dayofweek
+    
+    results = {}
+    
+    # 1. Overall statistics
+    results['overall_stats'] = {
+        'mean': float(analysis_df[value_column].mean()),
+        'min': float(analysis_df[value_column].min()),
+        'max': float(analysis_df[value_column].max()),
+        'std': float(analysis_df[value_column].std()),
+        'count': int(len(analysis_df))
+    }
+    
+    print(f"\n📈 Overall {value_column} statistics:")
+    print(f"   Mean: {results['overall_stats']['mean']:.2f}")
+    print(f"   Range: {results['overall_stats']['min']:.2f} to {results['overall_stats']['max']:.2f}")
+    
+    # 2. Monthly patterns
+    monthly_patterns = analysis_df.groupby('month')[value_column].agg(['mean', 'min', 'max', 'count'])
+    results['monthly_patterns'] = monthly_patterns.to_dict('index')
+    
+    warmest_month = monthly_patterns['mean'].idxmax()
+    coolest_month = monthly_patterns['mean'].idxmin()
+    
+    results['seasonal_summary'] = {
+        'warmest_month': int(warmest_month),
+        'warmest_temp': float(monthly_patterns.loc[warmest_month, 'mean']),
+        'coolest_month': int(coolest_month),
+        'coolest_temp': float(monthly_patterns.loc[coolest_month, 'mean']),
+        'seasonal_range': float(monthly_patterns['mean'].max() - monthly_patterns['mean'].min())
+    }
+    
+    print(f"\n🌅 Seasonal patterns:")
+    print(f"   Warmest month: {warmest_month} ({results['seasonal_summary']['warmest_temp']:.1f}°C)")
+    print(f"   Coolest month: {coolest_month} ({results['seasonal_summary']['coolest_temp']:.1f}°C)")
+    
+    # 3. Station-specific patterns (if available)
+    if groupby_column in analysis_df.columns and analysis_df[groupby_column].nunique() > 1:
+        station_patterns = analysis_df.groupby(groupby_column)[value_column].agg(['mean', 'min', 'max', 'count'])
+        results['station_patterns'] = station_patterns.to_dict('index')
+        
+        print(f"\n🌡️  Station-specific analysis:")
+        print(f"   Analyzed {len(station_patterns)} stations")
+    
+    print(f"\n✅ Temporal analysis complete!")
+    
+    return results
 
 
 # Helper functions (you don't need to modify these)

@@ -37,7 +37,7 @@ class PandasAnalysisGrader(BaseGradingEngine):
         super().__init__(
             assignment_name="Pandas Environmental Analysis",
             module_name="Module 3 - Python GIS Containerization", 
-            total_possible_points=10,
+            total_possible_points=15,
             verbose=verbose
         )
         self.assignment_dir = Path(assignment_dir).resolve()
@@ -79,12 +79,13 @@ class PandasAnalysisGrader(BaseGradingEngine):
         }
 
     def define_component_categories(self) -> Dict[str, Dict[str, Any]]:
-        """Define the grading components for pandas assignment."""
+        """Define the grading components for pandas assignment (15 points total, 8 functions)."""
         return {
+            # Core Functions (10 points total)
             "load_and_explore": {
-                "name": "Load and Explore Data",
+                "name": "Load and Explore GIS Data",
                 "points": 2,
-                "description": "Load CSV data and perform basic exploratory analysis"
+                "description": "Load CSV files and explore dataset structure"
             },
             "filter_data": {
                 "name": "Filter Environmental Data", 
@@ -94,34 +95,57 @@ class PandasAnalysisGrader(BaseGradingEngine):
             "calculate_statistics": {
                 "name": "Calculate Station Statistics",
                 "points": 2,
-                "description": "Calculate summary statistics using groupby operations"
+                "description": "Calculate aggregated statistics using groupby"
             },
             "join_data": {
                 "name": "Join Station Data",
                 "points": 2,
-                "description": "Join datasets using pandas merge functionality"
+                "description": "Merge station locations with measurement data"
             },
             "save_data": {
                 "name": "Save Processed Data",
-                "points": 1,
-                "description": "Save processed data to CSV format"
+                "points": 2,
+                "description": "Export processed data to CSV format"
             },
-            "code_quality": {
-                "name": "Code Quality",
+            # Advanced Functions (3 points total)
+            "validate_coordinates": {
+                "name": "Validate Coordinate Data",
                 "points": 1,
-                "description": "Clean, readable code with proper structure"
+                "description": "Comprehensive coordinate validation and quality assessment"
+            },
+            "multi_condition_filtering": {
+                "name": "Multi-Condition Filtering",
+                "points": 1,
+                "description": "Complex filtering with multiple criteria and logical operations"
+            },
+            "analyze_temporal": {
+                "name": "Analyze Temporal Patterns",
+                "points": 1,
+                "description": "Time series analysis with pandas datetime functionality"
+            },
+            # Learning Reflection (2 points)
+            "ai_reflection": {
+                "name": "AI Learning Reflection",
+                "points": 2,
+                "description": "Complete AI_LEARNING_REFLECTION.md with analysis of AI-assisted learning"
             }
         }
 
     def run_tests(self) -> Dict[str, Any]:
-        """Run all tests and return results."""
+        """Run all tests and return results for all 8 functions + reflection."""
         results = {
+            # Core Functions (10 points)
             "load_and_explore": self._assess_load_and_explore(),
             "filter_data": self._assess_filter_data(), 
             "calculate_statistics": self._assess_calculate_statistics(),
             "join_data": self._assess_join_data(),
             "save_data": self._assess_save_data(),
-            "code_quality": self._assess_code_quality()
+            # Advanced Functions (3 points)
+            "validate_coordinates": self._assess_validate_coordinates(),
+            "multi_condition_filtering": self._assess_multi_condition_filtering(),
+            "analyze_temporal": self._assess_analyze_temporal(),
+            # Learning Reflection (2 points)
+            "ai_reflection": self._assess_ai_reflection()
         }
         
         return results
@@ -213,10 +237,10 @@ class PandasAnalysisGrader(BaseGradingEngine):
         return {"score": score, "max_points": max_points, "feedback": feedback}
 
     def _assess_save_data(self) -> Dict[str, Any]:
-        """Assess save_processed_data function (1 point)."""
+        """Assess save_processed_data function (2 points)."""
         score = 0
         feedback = []
-        max_points = 1
+        max_points = 2
         
         try:
             result = self._run_pytest_test("TestSaveProcessedData")
@@ -231,64 +255,114 @@ class PandasAnalysisGrader(BaseGradingEngine):
             
         return {"score": score, "max_points": max_points, "feedback": feedback}
 
-    def _assess_code_quality(self) -> Dict[str, Any]:
-        """Assess overall code quality (1 point)."""
+    def _assess_validate_coordinates(self) -> Dict[str, Any]:
+        """Assess validate_coordinate_data function (1 point)."""
         score = 0
         feedback = []
         max_points = 1
         
         try:
-            if not self.pandas_file.exists():
-                feedback.append("❌ pandas_basics.py file not found")
-                return {"score": 0, "max_points": max_points, "feedback": feedback}
-            
-            # Check file size (should have meaningful implementation)
-            file_size = self.pandas_file.stat().st_size
-            if file_size < 500:  # Minimum reasonable implementation size
-                feedback.append("❌ Implementation appears incomplete (file too small)")
-                return {"score": 0, "max_points": max_points, "feedback": feedback}
-            
-            # Check for basic code structure
-            content = self.pandas_file.read_text(encoding='utf-8', errors='ignore')
-            
-            # Look for pandas import
-            if 'import pandas' in content or 'from pandas' in content:
-                score += 0.3
-                feedback.append("✅ Pandas import found")
+            result = self._run_pytest_test("TestValidateCoordinateData")
+            if result["passed"]:
+                score = max_points
+                feedback.append("✅ Validate coordinate data function implemented correctly")
             else:
-                feedback.append("❌ Missing pandas import")
-            
-            # Look for function definitions
-            required_functions = [
-                'load_and_explore_gis_data',
-                'filter_environmental_data', 
-                'calculate_station_statistics',
-                'join_station_data',
-                'save_processed_data'
-            ]
-            
-            functions_found = 0
-            for func in required_functions:
-                if f'def {func}' in content:
-                    functions_found += 1
-            
-            if functions_found >= 4:
-                score += 0.4
-                feedback.append(f"✅ Found {functions_found}/5 required functions")
-            else:
-                feedback.append(f"❌ Only found {functions_found}/5 required functions")
-            
-            # Look for basic documentation/comments
-            if '#' in content or '"""' in content:
-                score += 0.3
-                feedback.append("✅ Code includes comments/documentation")
-            else:
-                feedback.append("❌ Code lacks comments/documentation")
+                feedback.append(f"❌ Validate coordinate data test failed: {result['error']}")
                 
-            score = min(score, max_points)  # Cap at max points
-            
         except Exception as e:
-            feedback.append(f"❌ Error assessing code quality: {str(e)}")
+            feedback.append(f"❌ Error assessing validate coordinates: {str(e)}")
+            
+        return {"score": score, "max_points": max_points, "feedback": feedback}
+
+    def _assess_multi_condition_filtering(self) -> Dict[str, Any]:
+        """Assess multi_condition_filtering function (1 point)."""
+        score = 0
+        feedback = []
+        max_points = 1
+        
+        try:
+            result = self._run_pytest_test("TestMultiConditionFiltering")
+            if result["passed"]:
+                score = max_points
+                feedback.append("✅ Multi-condition filtering function implemented correctly")
+            else:
+                feedback.append(f"❌ Multi-condition filtering test failed: {result['error']}")
+                
+        except Exception as e:
+            feedback.append(f"❌ Error assessing multi-condition filtering: {str(e)}")
+            
+        return {"score": score, "max_points": max_points, "feedback": feedback}
+
+    def _assess_analyze_temporal(self) -> Dict[str, Any]:
+        """Assess analyze_temporal_patterns function (1 point)."""
+        score = 0
+        feedback = []
+        max_points = 1
+        
+        try:
+            result = self._run_pytest_test("TestAnalyzeTemporalPatterns")
+            if result["passed"]:
+                score = max_points
+                feedback.append("✅ Analyze temporal patterns function implemented correctly")
+            else:
+                feedback.append(f"❌ Analyze temporal patterns test failed: {result['error']}")
+                
+        except Exception as e:
+            feedback.append(f"❌ Error assessing analyze temporal patterns: {str(e)}")
+            
+        return {"score": score, "max_points": max_points, "feedback": feedback}
+
+    def _assess_ai_reflection(self) -> Dict[str, Any]:
+        """Assess AI Learning Reflection document (2 points)."""
+        score = 0
+        feedback = []
+        max_points = 2
+        
+        try:
+            reflection_file = self.assignment_dir / "AI_LEARNING_REFLECTION.md"
+            
+            if not reflection_file.exists():
+                feedback.append("❌ AI_LEARNING_REFLECTION.md file not found")
+                return {"score": 0, "max_points": max_points, "feedback": feedback}
+            
+            content = reflection_file.read_text(encoding='utf-8', errors='ignore')
+            word_count = len(content.split())
+            
+            if word_count < 500:
+                feedback.append(f"❌ Reflection too short: {word_count} words (minimum 500 required)")
+                return {"score": 0, "max_points": max_points, "feedback": feedback}
+            
+            # Check for AI mode mentions
+            ai_modes_mentioned = 0
+            if 'ask' in content.lower() or 'chat' in content.lower():
+                ai_modes_mentioned += 1
+            if 'agent' in content.lower() or 'suggestion' in content.lower():
+                ai_modes_mentioned += 1  
+            if 'edit' in content.lower() or 'inline' in content.lower():
+                ai_modes_mentioned += 1
+                
+            if ai_modes_mentioned >= 2:
+                score += 1
+                feedback.append(f"✅ Discusses multiple AI modes ({ai_modes_mentioned}/3)")
+            else:
+                feedback.append(f"⚠️  Limited AI mode discussion ({ai_modes_mentioned}/3 modes mentioned)")
+                score += 0.5
+                
+            # Check for learning reflection content
+            reflection_indicators = ['learn', 'understand', 'challenge', 'improve', 'experience', 'pandas']
+            indicators_found = sum(1 for indicator in reflection_indicators if indicator in content.lower())
+            
+            if indicators_found >= 4:
+                score += 1
+                feedback.append(f"✅ Comprehensive learning reflection ({word_count} words)")
+            else:
+                score += 0.5
+                feedback.append(f"⚠️  Basic learning reflection ({word_count} words)")
+            
+            score = min(max_points, score)
+                
+        except Exception as e:
+            feedback.append(f"❌ Error assessing AI reflection: {str(e)}")
             
         return {"score": score, "max_points": max_points, "feedback": feedback}
 

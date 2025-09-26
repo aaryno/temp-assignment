@@ -318,117 +318,108 @@ def save_processed_data(df, output_file):
         return False
 
 
-def setup_containerized_environment(container_config):
+def validate_coordinate_data(df):
     """
-    CONTAINERIZED ENVIRONMENT SETUP (Setting up consistent development environment)
+    VALIDATE COORDINATE DATA (Basic coordinate validation)
     
-    This function demonstrates containerized development environment management for
-    reliable, reproducible data analysis workflows. Students learn practical benefits
-    of containerization without complex configuration.
+    Medium-quality implementation with basic validation.
+    """
     
-    In professional GIS development, containerization ensures that analysis runs
-    consistently across different computers, operating systems, and team members.
-    This is especially important for environmental data analysis where reproducibility
-    is crucial for scientific validity.
+    print('VALIDATING COORDINATE DATA')
     
-    📚 Learning Resource: See GitHub Codespaces environment you're working in!
-    🧪 Test Command: `uv run pytest tests/test_pandas_basics.py::test_setup_containerized_environment -v`
+    if df is None or df.empty:
+        return pd.DataFrame()
     
-    Args:
-        container_config (dict): Configuration dictionary with container environment settings
+    # Basic coordinate validation (less comprehensive than good sample)
+    if 'latitude' not in df.columns or 'longitude' not in df.columns:
+        return df
         
-    Expected keys in container_config:
-        - 'environment_name': Name for the analysis environment (str)
-        - 'python_version': Python version to validate (str, e.g., "3.11")  
-        - 'required_packages': List of required package names (list)
-        - 'data_mount_point': Expected data directory path (str)
-        - 'output_directory': Directory for analysis outputs (str)
-        
-    Returns:
-        dict: Environment validation results with keys:
-            - 'environment_ready': Boolean indicating if environment is properly configured
-            - 'python_version_match': Boolean indicating if Python version meets requirements
-            - 'packages_available': List of successfully imported packages
-            - 'data_accessible': Boolean indicating if data directory is accessible
-            - 'output_writable': Boolean indicating if output directory is writable
-            - 'container_benefits': List of containerization benefits demonstrated
-            - 'setup_summary': String summary of environment validation
+    # Simple range checking
+    valid_lat = (df['latitude'] >= -90) & (df['latitude'] <= 90)
+    valid_lon = (df['longitude'] >= -180) & (df['longitude'] <= 180)
+    
+    # Remove invalid coordinates
+    validated_df = df[valid_lat & valid_lon]
+    
+    print(f'Validated {len(validated_df)} out of {len(df)} coordinates')
+    return validated_df
+
+
+def multi_condition_filtering(df, filters_config):
+    """
+    MULTI-CONDITION FILTERING (Basic implementation)
+    
+    Medium-quality implementation with simple filtering logic.
+    """
+    
+    print('APPLYING MULTI-CONDITION FILTERING')
+    
+    if df is None or df.empty or not filters_config:
+        return df
+    
+    # Simple implementation - only handles numeric ranges
+    filtered_df = df.copy()
+    
+    for column, config in filters_config.items():
+        if column == 'logic':
+            continue
             
-    Example:
-        >>> config = {
-        ...     'environment_name': 'pandas-gis-analysis',
-        ...     'python_version': '3.11',
-        ...     'required_packages': ['pandas', 'numpy', 'matplotlib'],
-        ...     'data_mount_point': './data',
-        ...     'output_directory': './output'
-        ... }
-        >>> result = setup_containerized_environment(config)
-        >>> print(result['environment_ready'])
-        True
-        >>> print(result['container_benefits'])
-        ['Consistent environment across systems', 'Reproducible analysis results', ...]
+        if column not in df.columns:
+            continue
+            
+        # Only handle min/max filtering
+        if 'min' in config:
+            filtered_df = filtered_df[filtered_df[column] >= config['min']]
+        if 'max' in config:
+            filtered_df = filtered_df[filtered_df[column] <= config['max']]
     
-    Professional Context:
-        This function simulates the environment validation that occurs in containerized
-        GIS workflows used by organizations like USGS, NOAA, and environmental consulting
-        firms. Understanding container benefits prepares students for professional 
-        development workflows.
+    print(f'Filtered to {len(filtered_df)} rows')
+    return filtered_df
+
+
+def analyze_temporal_patterns(df, date_column='date', value_column='temperature', groupby_column='station_id'):
+    """
+    ANALYZE TEMPORAL PATTERNS (Basic implementation)
+    
+    Medium-quality implementation with simple temporal analysis.
     """
     
-    # TODO: Validate input parameters
-    # TODO: Check that container_config is a dictionary
-    # TODO: Verify all required keys are present
-    # TODO: Return error result if validation fails
+    print('ANALYZING TEMPORAL PATTERNS')
     
-    # TODO: Initialize result dictionary with default values
-    # TODO: Set environment_ready=False, python_version_match=False, etc.
+    if df is None or df.empty:
+        return {}
+        
+    if date_column not in df.columns or value_column not in df.columns:
+        return {}
     
-    # TODO: Check Python version compatibility
-    # TODO: Import sys module to get current Python version
-    # TODO: Compare with required version from container_config
-    # TODO: Update python_version_match in result
+    # Basic implementation - just overall stats
+    analysis_df = df.copy()
+    analysis_df[date_column] = pd.to_datetime(analysis_df[date_column])
     
-    # TODO: Test package availability
-    # TODO: Try importing each package from required_packages list
-    # TODO: Add successfully imported packages to packages_available list
-    # TODO: Handle import errors gracefully (packages may not be installed)
+    results = {
+        'overall_stats': {
+            'mean': float(analysis_df[value_column].mean()),
+            'min': float(analysis_df[value_column].min()),
+            'max': float(analysis_df[value_column].max()),
+            'count': int(len(analysis_df))
+        }
+    }
     
-    # TODO: Validate data accessibility
-    # TODO: Check if data_mount_point directory exists and is readable
-    # TODO: Try listing files in data directory
-    # TODO: Update data_accessible in result
+    # Simple monthly analysis
+    analysis_df['month'] = analysis_df[date_column].dt.month
+    monthly_stats = analysis_df.groupby('month')[value_column].mean()
     
-    # TODO: Test output directory writability
-    # TODO: Check if output_directory exists, create if needed
-    # TODO: Try writing a test file to verify write permissions
-    # TODO: Clean up test file after verification
-    # TODO: Update output_writable in result
+    results['monthly_patterns'] = monthly_stats.to_dict()
+    results['seasonal_summary'] = {
+        'warmest_month': int(monthly_stats.idxmax()),
+        'warmest_temp': float(monthly_stats.max()),
+        'coolest_month': int(monthly_stats.idxmin()),
+        'coolest_temp': float(monthly_stats.min()),
+        'seasonal_range': float(monthly_stats.max() - monthly_stats.min())
+    }
     
-    # TODO: Assess overall environment readiness
-    # TODO: Set environment_ready=True if all checks pass
-    # TODO: Consider partial success scenarios
-    
-    # TODO: Document container benefits
-    # TODO: Create list of benefits demonstrated by this environment
-    # TODO: Include items like: 'Consistent environment across systems',
-    # TODO: 'Reproducible analysis results', 'No local installation required',
-    # TODO: 'Isolated dependencies', 'Easy collaboration', etc.
-    
-    # TODO: Generate setup summary
-    # TODO: Create informative summary string about environment validation
-    # TODO: Include environment name, status, and key findings
-    # TODO: Make it useful for debugging environment issues
-    
-    # TODO: Print environment status (for educational purposes)
-    # TODO: Show environment name and overall readiness
-    # TODO: Display Python version information
-    # TODO: List available packages and any missing ones
-    # TODO: Report on data and output directory accessibility
-    # TODO: Highlight container benefits for learning
-    
-    # TODO: Return the complete result dictionary
-    
-    pass  # Remove this line when you implement the function
+    print('Temporal analysis complete')
+    return results
 
 
 # Helper functions (you don't need to modify these)

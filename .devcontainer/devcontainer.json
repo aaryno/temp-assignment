@@ -1,41 +1,83 @@
 {
-  "name": "M3A2: Pandas Environmental Analysis - AI-Enhanced Learning",
-  "image": "aaryno/devcontainer-base-python:fall-2025",
+  "name": "GIST 604B - M3A2: Pandas Environmental Analysis with AI",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
   
+  // Enable Docker-in-Docker for grading system
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
+        // Python Development
         "ms-python.python",
-        "ms-python.pylance",
-        "ms-toolsai.jupyter",
-        "github.copilot",
-        "github.copilot-chat",
+        "ms-python.pylance", 
         "ms-python.black-formatter",
         "charliermarsh.ruff",
-        "eamodio.gitlens"
+        "ms-toolsai.jupyter",
+        
+        // GitHub Copilot AI Integration
+        "github.copilot",
+        "github.copilot-chat",
+        
+        // Git and Collaboration
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        
+        // Development Tools
+        "ms-vscode.test-adapter-converter",
+        "littlefoxteam.vscode-python-test-adapter",
+        "streetsidesoftware.code-spell-checker"
       ],
       "settings": {
+        // GitHub Copilot Configuration
         "github.copilot.enable": {
           "*": true,
           "python": true,
-          "jupyter": true
+          "jupyter": true,
+          "markdown": true,
+          "yaml": true
         },
+        "github.copilot.advanced": {
+          "debug.overrideEngine": "codex"
+        },
+        
+        // Python Configuration
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
-        "jupyter.askForKernelRestart": false
+        "python.linting.pylintEnabled": false,
+        "python.linting.flake8Enabled": true,
+        "python.formatting.provider": "black",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [
+          "tests/"
+        ],
+        
+        // Editor Configuration for AI Learning
+        "editor.inlineSuggest.enabled": true,
+        "editor.suggestSelection": "first",
+        "editor.tabCompletion": "on",
+        "editor.wordBasedSuggestions": false,
+        
+        // File Explorer
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.*": false
+        }
       }
     }
   },
-  
   "forwardPorts": [8888],
-  "portsAttributes": {
-    "8888": {
-      "label": "Jupyter Lab",
-      "onAutoForward": "notify"
-    }
-  },
+  "postCreateCommand": "pip install -r requirements.txt && echo '\n🤖 AI-Enhanced GIS Development Environment Ready!' && echo '✅ GitHub Copilot Pro integrated for learning assistance' && echo '🐳 Docker-in-Docker enabled for grading system' && echo '📚 Try asking Copilot: \"How do I filter a pandas DataFrame with multiple conditions?\"' && echo '💡 Use Ctrl+Shift+I (Cmd+Shift+I on Mac) to open Copilot Chat' && echo '🎯 Focus on learning pandas concepts while AI handles syntax!' && echo '🧪 Use \"make build\" then \"make grade\" to test your assignment'",
+  "remoteUser": "vscode",
   
-  "postCreateCommand": "echo '🤖 M3A2 AI-Enhanced Environment Ready! GitHub Copilot enabled for pandas learning with Ask/Agent/Edit modes. All packages pre-installed with UV.'",
-  
-  "remoteUser": "vscode"
+  // Mount Docker socket for Docker-in-Docker functionality
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ]
 }
