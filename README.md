@@ -259,13 +259,52 @@ You need to implement **8 functions** in the file `src/pandas_basics.py`. Each f
 - **Advanced Functions** (3 points): Complex analysis, validation, and multi-dataset operations  
 - **AI Learning Reflection** (2 points): Written reflection on AI-assisted learning process
 
-**📚 Learning Process:**
-1. **Learn**: Open the notebook for each function to understand how it works
-2. **Practice AI Modes**: Use Copilot's ask, agent, and edit modes during implementation
-3. **Implement**: Write your code in `src/pandas_basics.py` (replace the TODO comments)
-4. **Test**: Run pytest to verify your implementation works correctly
-5. **Reflect**: Complete the AI learning reflection (500+ words)
-6. **Submit**: Push your completed assignment to GitHub
+---
+
+## 🎓 **CRITICAL: Learning Workflow (How This Assignment Works)**
+
+**This assignment uses an interactive learning approach:** You learn in Jupyter notebooks, then implement in Python files.
+
+### **📚 Step-by-Step Process for EACH Function:**
+
+#### **STEP 1: Learn in the Notebook** 
+- Open the notebook: `notebooks/01_function_load_and_explore_gis_data.ipynb`
+- Work through the tutorial cells step-by-step
+- Experiment, run code, test different approaches
+- **USE GITHUB COPILOT** to help with syntax and understanding
+
+#### **STEP 2: Develop Your Final Function**
+- Build your function in the notebook using what you learned
+- Test it thoroughly with the provided data
+- Make sure it handles errors and edge cases
+- Get it working exactly as you want it
+
+#### **STEP 3: Copy Code to Python File**
+- **CRITICAL**: Copy your final working function from the notebook
+- Paste it into `src/pandas_basics.py` (replace the TODO comments)
+- **The Python file is what gets graded** - notebooks are for learning!
+
+#### **STEP 4: Test Your Implementation**
+- Run: `uv run pytest tests/test_pandas_basics.py::test_function_name -v`
+- Make sure your function passes all unit tests
+- Fix any issues by going back to the notebook
+
+#### **STEP 5: Repeat for All 8 Functions**
+- Complete functions 1-8 using this same workflow
+- Each notebook teaches one function
+
+#### **STEP 6: Complete AI Learning Reflection**
+- Write your reflection in `AI_LEARNING_REFLECTION.md`
+- Reflect on how Copilot helped your learning process
+
+---
+
+### **🔑 Key Points:**
+- **Notebooks = Learning Environment** (experiment, learn, practice)
+- **`src/pandas_basics.py` = Your Final Implementations** (what gets graded)  
+- **Tests = Verification** (prove your code works correctly)
+- **Each function has its own notebook** with step-by-step instructions
+- **Copy working code from notebooks to Python file** - this is essential!
 
 ---
 
@@ -340,71 +379,9 @@ You need to implement **8 functions** in the file `src/pandas_basics.py`. Each f
 uv run pytest tests/test_pandas_basics.py::test_load_and_explore_gis_data -v
 ```
 
-### **2. `filter_environmental_data()` (2 points)**
-📚 **Learning Notebook:** `notebooks/02_function_filter_environmental_data.ipynb`  
-🤖 **AI Usage**: Ask mode to understand filtering concepts
-
-**Core Requirements:**
-- Filter data using boolean indexing with temperature and quality criteria
-- Handle multiple filtering conditions with performance optimization
-- Provide comprehensive filtering statistics and data loss analysis
-- Return filtered DataFrame with detailed validation and reporting
-
-**Test Command:**
-```bash
-uv run pytest tests/test_pandas_basics.py::test_filter_environmental_data -v
-```
-
-### **3. `calculate_station_statistics()` (2 points)**
-📚 **Learning Notebook:** `notebooks/03_function_calculate_station_statistics.ipynb`  
-🤖 **AI Usage**: Edit mode for statistical calculation optimization
-
-**Core Requirements:**
-- Group data by station using sophisticated `.groupby()` operations
-- Calculate comprehensive station-level statistics with outlier detection
-- Identify statistical outliers, extreme values, and data quality patterns
-- Return formatted statistics DataFrame with professional-grade analysis
-
-**Test Command:**
-```bash
-uv run pytest tests/test_pandas_basics.py::test_calculate_station_statistics -v
-```
-
-### **4. `join_station_data()` (2 points)**
-📚 **Learning Notebook:** `notebooks/04_function_join_station_data.ipynb`  
-🤖 **AI Usage**: Agent mode for join syntax, ask mode for join strategy concepts
-
-**Core Requirements:**
-- Perform sophisticated spatial joins using advanced `pd.merge()` techniques
-- Handle multiple join scenarios, edge cases, and data validation
-- Implement join result validation with comprehensive error checking
-- Return enriched dataset with spatial attributes and join quality metrics
-
-**Test Command:**
-```bash
-uv run pytest tests/test_pandas_basics.py::test_join_station_data -v
-```
-
-### **5. `save_processed_data()` (2 points)**
-📚 **Learning Notebook:** `notebooks/05_function_save_processed_data.ipynb`  
-🤖 **AI Usage**: Edit mode for error handling and optimization
-
-**Core Requirements:**
-- Export processed data with multiple format options and validation
-- Handle file path validation, error recovery, and data integrity checks
-- Generate export summaries, metadata, and data quality reports
-- Ensure robust error handling with comprehensive user feedback
-
-**Test Command:**
-```bash
-uv run pytest tests/test_pandas_basics.py::test_save_processed_data -v
-```
-
-## 🚀 **ADVANCED FUNCTIONS (3 points)**
-
-### **6. `validate_coordinate_data()` (1 point)**  
-📚 **Learning Notebook:** `notebooks/06_function_validate_coordinate_data.ipynb`  
-🤖 **AI Usage**: Ask mode to understand coordinate validation concepts, agent mode for boolean operations
+### **2. `validate_coordinate_data()` (1 point)**  
+📚 **Learning Notebook:** `notebooks/02_function_validate_coordinate_data.ipynb`  
+🤖 **AI Usage**: Ask mode to understand coordinate validation concepts
 
 **Advanced Requirements:**
 - Comprehensive coordinate validation for latitude/longitude data
@@ -417,8 +394,8 @@ uv run pytest tests/test_pandas_basics.py::test_save_processed_data -v
 uv run pytest tests/test_pandas_basics.py::test_validate_coordinate_data -v
 ```
 
-### **7. `multi_condition_filtering()` (1 point)**
-📚 **Learning Notebook:** `notebooks/07_function_multi_condition_filtering.ipynb`  
+### **3. `multi_condition_filtering()` (1 point)**
+📚 **Learning Notebook:** `notebooks/03_function_multi_condition_filtering.ipynb`  
 🤖 **AI Usage**: Agent mode for complex filtering logic, edit mode for optimization
 
 **Advanced Requirements:**
@@ -432,8 +409,8 @@ uv run pytest tests/test_pandas_basics.py::test_validate_coordinate_data -v
 uv run pytest tests/test_pandas_basics.py::test_multi_condition_filtering -v
 ```
 
-### **8. `analyze_temporal_patterns()` (1 point)**
-📚 **Learning Notebook:** `notebooks/08_function_analyze_temporal_patterns.ipynb`  
+### **4. `analyze_temporal_patterns()` (1 point)**
+📚 **Learning Notebook:** `notebooks/04_function_analyze_temporal_patterns.ipynb`  
 🤖 **AI Usage**: Ask mode for time series concepts, agent mode for datetime operations
 
 **Advanced Requirements:**
@@ -445,6 +422,66 @@ uv run pytest tests/test_pandas_basics.py::test_multi_condition_filtering -v
 **Test Command:**
 ```bash
 uv run pytest tests/test_pandas_basics.py::test_analyze_temporal_patterns -v
+```
+
+### **5. `filter_environmental_data()` (2 points)**
+📚 **Learning Notebook:** `notebooks/05_function_filter_environmental_data.ipynb`  
+🤖 **AI Usage**: Ask mode to understand filtering concepts
+
+**Enhanced Requirements:**
+- Filter data using advanced boolean indexing with temperature and quality criteria
+- Handle multiple filtering conditions with performance optimization
+- Provide comprehensive filtering statistics and data loss analysis
+- Return filtered DataFrame with detailed validation and reporting
+
+**Test Command:**
+```bash
+uv run pytest tests/test_pandas_basics.py::test_filter_environmental_data -v
+```
+
+### **6. `calculate_station_statistics()` (2 points)**
+📚 **Learning Notebook:** `notebooks/06_function_calculate_station_statistics.ipynb`  
+🤖 **AI Usage**: Edit mode for statistical calculation optimization
+
+**Enhanced Requirements:**
+- Group data by station using sophisticated `.groupby()` operations
+- Calculate comprehensive station-level statistics with outlier detection
+- Identify statistical outliers, extreme values, and data quality patterns
+- Return formatted statistics DataFrame with professional-grade analysis
+
+**Test Command:**
+```bash
+uv run pytest tests/test_pandas_basics.py::test_calculate_station_statistics -v
+```
+
+### **7. `join_station_data()` (2 points)**
+📚 **Learning Notebook:** `notebooks/07_function_join_station_data.ipynb`  
+🤖 **AI Usage**: Agent mode for join syntax, ask mode for join strategy concepts
+
+**Enhanced Requirements:**
+- Perform sophisticated spatial joins using advanced `pd.merge()` techniques
+- Handle multiple join scenarios, edge cases, and data validation
+- Implement join result validation with comprehensive error checking
+- Return enriched dataset with spatial attributes and join quality metrics
+
+**Test Command:**
+```bash
+uv run pytest tests/test_pandas_basics.py::test_join_station_data -v
+```
+
+### **8. `save_processed_data()` (2 points)**
+📚 **Learning Notebook:** `notebooks/08_function_save_processed_data.ipynb`  
+🤖 **AI Usage**: Edit mode for error handling and optimization
+
+**Enhanced Requirements:**
+- Export processed data with multiple format options and validation
+- Handle file path validation, error recovery, and data integrity checks
+- Generate export summaries, metadata, and data quality reports
+- Ensure robust error handling with comprehensive user feedback
+
+**Test Command:**
+```bash
+uv run pytest tests/test_pandas_basics.py::test_save_processed_data -v
 ```
 
 ## 📝 **AI LEARNING REFLECTION (2 points)**

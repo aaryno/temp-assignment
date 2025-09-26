@@ -2,31 +2,53 @@
 Pandas Basics for GIS Data Analysis - Student Implementation
 ===========================================================
 
-Welcome! This module teaches you essential pandas skills for working with GIS data.
+🎓 CRITICAL: ASSIGNMENT WORKFLOW - READ THIS FIRST!
+==================================================
 
-Pandas is Python's most popular library for working with tabular data (like CSV files).
-Think of it as Excel, but with the power of Python programming!
+This is the file where you implement your final functions for grading.
+The notebooks teach you - this file gets graded!
 
-Don't worry if you're new to pandas - we've provided Jupyter notebooks in the `notebooks/`
-directory to guide you through building each function step by step.
+📚 LEARNING PROCESS FOR EACH FUNCTION:
+1. Open the notebook: `notebooks/01_function_load_and_explore_gis_data.ipynb`
+2. Work through the tutorial step by step in the notebook
+3. Build and test your function in the notebook environment
+4. Copy your working function from the notebook to THIS file
+5. Replace the TODO comments below with your code
+6. Run tests: `uv run pytest tests/test_pandas_basics.py::test_function_name -v`
+7. Repeat for all 8 functions
 
-What you'll learn:
+🔑 KEY POINTS:
+- Notebooks = Learning Environment (experiment, learn, practice)
+- THIS FILE = Your Submission (what gets graded)
+- Tests = Verification (prove your code works)
+
+📋 FUNCTIONS TO IMPLEMENT IN THIS FILE:
+=====================================
+✅ Function 1: load_and_explore_gis_data()     → notebooks/01_function_...
+✅ Function 2: filter_environmental_data()     → notebooks/02_function_...
+✅ Function 3: calculate_station_statistics()  → notebooks/03_function_...
+✅ Function 4: join_station_data()             → notebooks/04_function_...
+✅ Function 5: save_processed_data()           → notebooks/05_function_...
+✅ Function 6: validate_coordinate_data()      → notebooks/06_function_...
+✅ Function 7: multi_condition_filtering()     → notebooks/07_function_...
+✅ Function 8: analyze_temporal_patterns()     → notebooks/08_function_...
+
+💡 WHAT YOU'LL LEARN:
 - How to load CSV files into pandas DataFrames
 - How to explore and understand your data
 - How to filter data based on conditions
 - How to calculate statistics and group data
 - How to join datasets together
+- How to validate and clean data
+- How to analyze temporal patterns
 - How to save your results
 
-ASSIGNMENT INSTRUCTIONS:
-========================
-1. Complete each function below by replacing the TODO comments with your code
-2. Use the Jupyter notebooks in `notebooks/` to learn how to build each function
-3. Test your functions as you go: `uv run pytest tests/test_pandas_basics.py::test_function_name -v`
-4. Make sure all tests pass before submitting: `uv run pytest tests/ -v`
+🧪 TESTING YOUR WORK:
+- Test one function: `uv run pytest tests/test_pandas_basics.py::test_function_name -v`
+- Test all functions: `uv run pytest tests/ -v`
+- All tests must pass for full credit!
 
-IMPORTANT: The notebooks show you HOW to build each function, but you must implement
-the actual code here in this file to pass the unit tests!
+⚠️  IMPORTANT: Replace ALL TODO comments with your working code from the notebooks!
 """
 
 import pandas as pd
