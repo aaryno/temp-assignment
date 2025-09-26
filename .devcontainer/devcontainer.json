@@ -1,6 +1,6 @@
 {
   "name": "M3A2: Pandas Environmental Analysis - AI-Enhanced Learning",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "image": "aaryno/devcontainer-base-python:fall-2025",
   
   "customizations": {
     "vscode": {
@@ -35,7 +35,7 @@
     }
   },
   
-  "postCreateCommand": "pip install pandas geopandas numpy matplotlib jupyter && echo '🤖 M3A2 AI-Enhanced Environment Ready! GitHub Copilot enabled for pandas learning with Ask/Agent/Edit modes.'",
+  "postCreateCommand": "echo '🤖 M3A2 AI-Enhanced Environment Ready! GitHub Copilot enabled for pandas learning with Ask/Agent/Edit modes. All packages pre-installed with UV.'",
   
   "remoteUser": "vscode"
 }
